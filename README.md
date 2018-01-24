@@ -1,4 +1,4 @@
-# xml-format README
+# xml-format
 
 Format XML documents, without changing the content within elements.
 
@@ -6,7 +6,7 @@ Format XML documents, without changing the content within elements.
 
 This extension uses [vkBeautify](https://github.com/vkiryukhin/vkBeautify) xml formating.
 
-It is specifically designed to work with XML that contains things like line breaks inside elements, which you want to preserve on formatting.
+vkBeautify does not change the formatting of content within elements (eg line breaks, tabs etc) when formatting the document.
 
 Before:
 
