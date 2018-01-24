@@ -1,10 +1,10 @@
-# xml-format
+# XML Format
 
 Format XML documents, without changing the content within elements.
 
 ## Features
 
-This extension uses [vkBeautify](https://github.com/vkiryukhin/vkBeautify) xml formating.
+This extension uses [vkBeautify](https://github.com/vkiryukhin/vkBeautify) for xml formating.
 
 vkBeautify does not change the formatting of content within elements (eg line breaks, tabs etc) when formatting the document.
 
