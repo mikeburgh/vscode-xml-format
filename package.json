@@ -1,0 +1,35 @@
+{
+    "name": "xml-format",
+    "displayName": "XML Format",
+    "description": "Format XML documents",
+    "version": "0.0.1",
+    "publisher": "mikeburgh",
+    "engines": {
+        "vscode": "^1.19.0"
+    },
+    "bugs": {
+        "url": "https://github.com/mikeburgh/vscode-xml-format"
+    },
+    "homepage": "https://github.com/mikeburgh/vscode-xml-format/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mikeburgh/vscode-xml-format.git"
+    },
+    "categories": [
+        "Formatters"
+    ],
+    "activationEvents": [
+        "onLanguage:xml"
+    ],
+    "main": "./extension",
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "eslint": "^4.6.1",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    }
+}
