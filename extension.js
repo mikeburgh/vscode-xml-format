@@ -1,31 +1,6 @@
 const vscode = require('vscode');
 
-// this method is called when your extension is activated
-function activate(context) {
-
-    var disposable = vscode.languages.registerDocumentFormattingEditProvider({ language: 'xml' }, {
-        provideDocumentFormattingEdits: function(document)  {
-            //Build a range of the entire document!
-            let range = new vscode.Range(
-				// line 0, char 0:
-				0, 0,
-				// last line:
-				document.lineCount - 1,
-				// last character:
-				document.lineAt(document.lineCount - 1).range.end.character
-			)
-            return [new vscode.TextEdit.replace(range, vkbeautify.xml(document.getText()))]
-        }
-    });
-    context.subscriptions.push(disposable);
-}
-exports.activate = activate;
-
-// this method is called when your extension is deactivated
-function deactivate() {
-}
-exports.deactivate = deactivate;
-
+var vkbeautify;
 
 ///Following is based on https://github.com/vkiryukhin/vkBeautify
 //Extracted the xml format method only.
@@ -72,8 +47,9 @@ function createShiftArr(step) {
 }
 
 function VKBeautify(){
-    this.step = '\t'; // 4 spaces
-    this.shift = createShiftArr(this.step);
+    var settings = vscode.workspace.getConfiguration();
+    this.step = settings.editor.insertSpaces ? settings.editor.tabSize : '\t';
+    this.shift = createShiftArr( this.step );
 };
 
 VKBeautify.prototype.xml = function(text,step) {
@@ -144,4 +120,39 @@ VKBeautify.prototype.xml = function(text,step) {
     return  (str[0] == '\n') ? str.slice(1) : str;
 }
 
-const vkbeautify = new VKBeautify();
+function updateVKBeautify()
+{
+    vkbeautify = new VKBeautify();
+}
+
+updateVKBeautify();
+
+// this method is called when your extension is activated
+function activate( context )
+{
+
+    var disposable = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xml' }, {
+        provideDocumentFormattingEdits: function( document )
+        {
+            //Build a range of the entire document!
+            let range = new vscode.Range(
+                // line 0, char 0:
+                0, 0,
+                // last line:
+                document.lineCount - 1,
+                // last character:
+                document.lineAt( document.lineCount - 1 ).range.end.character
+            )
+            return [ new vscode.TextEdit.replace( range, vkbeautify.xml( document.getText() ) ) ]
+        }
+    } );
+    vscode.workspace.onDidChangeConfiguration( updateVKBeautify, this, context.subscriptions );
+    context.subscriptions.push( disposable );
+}
+exports.activate = activate;
+
+// this method is called when your extension is deactivated
+function deactivate()
+{
+}
+exports.deactivate = deactivate;
