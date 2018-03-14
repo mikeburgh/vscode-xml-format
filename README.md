@@ -31,6 +31,11 @@ more content
 None
 
 ## Release Notes
+
+### 0.0.4
+
+Obey vscode indent settings (thanks to @Gruntfuggly)
+
 ### 0.0.3
 
 Copy changes
