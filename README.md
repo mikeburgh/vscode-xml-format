@@ -32,6 +32,10 @@ None
 
 ## Release Notes
 
+### 1.0.0
+
+Added a logo!
+
 ### 0.0.4
 
 Obey vscode indent settings (thanks to @Gruntfuggly)
