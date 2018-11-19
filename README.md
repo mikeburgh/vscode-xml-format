@@ -32,6 +32,10 @@ None
 
 ## Release Notes
 
+### 1.0.1
+
+Added support for XSL files
+
 ### 1.0.0
 
 Added a logo!

@@ -2,7 +2,7 @@
     "name": "xml-format",
     "displayName": "XML Format",
     "description": "Format XML documents",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "mikeburgh",
     "icon": "xml_formt.png",
     "engines": {
@@ -20,7 +20,8 @@
         "Formatters"
     ],
     "activationEvents": [
-        "onLanguage:xml"
+        "onLanguage:xml",
+        "onLanguage:xsl"
     ],
     "main": "./extension",
     "scripts": {

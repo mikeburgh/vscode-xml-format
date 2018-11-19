@@ -127,27 +127,40 @@ function updateVKBeautify()
 
 updateVKBeautify();
 
+ //Build a range of the entire document!
+function getRange(document) { 
+
+    return new vscode.Range(
+        // line 0, char 0:
+        0, 0,
+        // last line:
+        document.lineCount - 1,
+        // last character:
+        document.lineAt( document.lineCount - 1 ).range.end.character
+    )
+}
+
 // this method is called when your extension is activated
 function activate( context )
 {
 
-    var disposable = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xml' }, {
+    var disposableXML = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xml' }, {
         provideDocumentFormattingEdits: function( document )
         {
-            //Build a range of the entire document!
-            let range = new vscode.Range(
-                // line 0, char 0:
-                0, 0,
-                // last line:
-                document.lineCount - 1,
-                // last character:
-                document.lineAt( document.lineCount - 1 ).range.end.character
-            )
-            return [ new vscode.TextEdit.replace( range, vkbeautify.xml( document.getText() ) ) ]
+            return [ new vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
         }
     } );
     vscode.workspace.onDidChangeConfiguration( updateVKBeautify, this, context.subscriptions );
-    context.subscriptions.push( disposable );
+    context.subscriptions.push( disposableXML );
+
+    var disposableXSL = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xsl' }, {
+        provideDocumentFormattingEdits: function( document )
+        {
+            return [ new vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
+        }
+    } );
+    vscode.workspace.onDidChangeConfiguration( updateVKBeautify, this, context.subscriptions );
+    context.subscriptions.push( disposableXSL );
 }
 exports.activate = activate;
 
