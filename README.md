@@ -32,6 +32,10 @@ None
 
 ## Release Notes
 
+### 1.0.2
+
+Fixing use of new
+
 ### 1.0.1
 
 Added support for XSL files
