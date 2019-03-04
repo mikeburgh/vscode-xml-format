@@ -147,7 +147,7 @@ function activate( context )
     var disposableXML = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xml' }, {
         provideDocumentFormattingEdits: function( document )
         {
-            return [ new vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
+            return [ vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
         }
     } );
     vscode.workspace.onDidChangeConfiguration( updateVKBeautify, this, context.subscriptions );
@@ -156,7 +156,7 @@ function activate( context )
     var disposableXSL = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xsl' }, {
         provideDocumentFormattingEdits: function( document )
         {
-            return [ new vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
+            return [ vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
         }
     } );
     vscode.workspace.onDidChangeConfiguration( updateVKBeautify, this, context.subscriptions );
