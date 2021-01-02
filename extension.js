@@ -54,70 +54,103 @@ function VKBeautify(){
 
 VKBeautify.prototype.xml = function(text,step) {
 
-    var ar = text.replace(/>\s{0,}</g,"><")
+    var ar = text.trim()
                     .replace(/</g,"~::~<")
-                    .replace(/\s*xmlns\:/g,"~::~xmlns:")
-                    .replace(/\s*xmlns\=/g,"~::~xmlns=")
+                    //.replace(/(\s)(xmlns[:=])/g,"$1~::~$2")
                     .split('~::~'),
         len = ar.length,
         inComment = false,
+        inCDATA = false,
         deep = 0,
         str = '',
         ix = 0,
         shift = step ? createShiftArr(step) : this.shift;
 
         for(ix=0;ix<len;ix++) {
-            // start comment or <![CDATA[...]]> or <!DOCTYPE //
-            if(ar[ix].search(/<!/) > -1) { 
-                str += shift[deep]+ar[ix];
-                inComment = true; 
-                // end comment  or <![CDATA[...]]> //
-                if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1 || ar[ix].search(/!DOCTYPE/) > -1 ) { 
-                    inComment = false; 
+            // in comment //
+            if(inComment) {
+                str += ar[ix];
+                // end comment //
+                if(ar[ix].search(/-->/) > -1) {
+                    inComment = false;
                 }
-            } else 
-            // end comment  or <![CDATA[...]]> //
-            if(ar[ix].search(/-->/) > -1 || ar[ix].search(/\]>/) > -1) { 
+            }
+            // in <![CDATA[...]]> //
+            else if(inCDATA) {
                 str += ar[ix];
-                inComment = false; 
-            } else 
+                // end <![CDATA[...]]> //
+                if(ar[ix].search(/\]\]>/) > -1) {
+                    inCDATA = false;
+                }
+            }
+            // start comment //
+            else if(ar[ix].search(/<!--/) > -1) {
+                str = str.trim()+shift[deep]+ar[ix];
+                inComment = true;
+                // end comment //
+                if(ar[ix].search(/-->/) > -1) {
+                    inComment = false;
+                }
+            }
+            // end comment //
+            else if(ar[ix].search(/-->/) > -1) {
+                str += ar[ix];
+                inComment = false;
+            }
+            // start <![CDATA[...]]> //
+            else if(ar[ix].search(/<!\[CDATA\[/) > -1) {
+                str = str.trim()+shift[deep]+ar[ix];
+                inCDATA = true;
+                // end <![CDATA[...]]> //
+                if(ar[ix].search(/\]\]>/) > -1) {
+                    inCDATA = false;
+                }
+            }
+            // end <![CDATA[...]]> //
+            else if(ar[ix].search(/\]\]>/) > -1) {
+                str += ar[ix];
+                inCDATA = false;
+            }
+            // <!DOCTYPE //
+            else if(ar[ix].search(/<!/) > -1) {
+                str = str.trim()+shift[deep]+ar[ix];
+            }
+            // <?xml //
+            else if(ar[ix].search(/<\?/) > -1) {
+                str = str.trim()+shift[deep]+ar[ix];
+            }
             // <elm></elm> //
-            if( /^<\w/.exec(ar[ix-1]) && /^<\/\w/.exec(ar[ix]) &&
-                /^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('/','')) { 
+            else if( ix > 0 &&
+                /^<\/[^<>!?\/\s]/.exec(ar[ix]) && /^<[^<>!?\/\s]/.exec(ar[ix-1]) &&
+                /^<\/[^<>!?\/\s]+/.exec(ar[ix])[0].replace('/','') == /^<[^<>!?\/\s]+/.exec(ar[ix-1])[0] ) {
+                if(deep > 0) deep--;
                 str += ar[ix];
-                if(!inComment) deep--;
-            } else
-                // <elm> //
-            if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) == -1 && ar[ix].search(/\/>/) == -1 ) {
-                str = !inComment ? str += shift[deep++]+ar[ix] : str += ar[ix];
-            } else 
-                // <elm>...</elm> //
-            if(ar[ix].search(/<\w/) > -1 && ar[ix].search(/<\//) > -1) {
-                str = !inComment ? str += shift[deep]+ar[ix] : str += ar[ix];
-            } else 
+            }
             // </elm> //
-            if(ar[ix].search(/<\//) > -1) { 
-                str = !inComment ? str += shift[--deep]+ar[ix] : str += ar[ix];
-            } else 
-            // <elm/> //
-            if(ar[ix].search(/\/>/) > -1 ) { 
-                str = !inComment ? str += shift[deep]+ar[ix] : str += ar[ix];
-            } else 
-            // <? xml ... ?> //
-            if(ar[ix].search(/<\?/) > -1) { 
-                str += shift[deep]+ar[ix];
-            } else 
+            else if(ar[ix].search(/<\//) > -1) {
+                if(deep > 0) deep--;
+                str = str.trim()+shift[deep]+ar[ix];
+            }
+            // <elm> or <elm/> //
+            else if(ar[ix].search(/<[^<>!?\/\s]/) > -1) {
+                str = str.trim()+shift[deep]+ar[ix];
+                deep++;
+                // <elm/> //
+                if(ar[ix].search(/\/>/) > -1) {
+                    deep--;
+                }
+            }
             // xmlns //
-            if( ar[ix].search(/xmlns\:/) > -1  || ar[ix].search(/xmlns\=/) > -1) { 
-                str += shift[deep]+ar[ix];
-            } 
-            
+            //else if(ar[ix].search(/xmlns[:=]/) > -1) {
+            //    str = str.trim()+shift[deep]+ar[ix];
+            //}
+
             else {
                 str += ar[ix];
             }
         }
-        
-    return  (str[0] == '\n') ? str.slice(1) : str;
+
+    return str.trim();
 }
 
 function updateVKBeautify()
