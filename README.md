@@ -54,7 +54,7 @@ None
 
 ## Release Notes
 
-### 1.0.3
+### 1.1.1
 
 Thanks to https://github.com/MasterNobody :
 
