@@ -1,33 +1,33 @@
 {
-    "name": "xml-format",
-    "displayName": "XML Format",
-    "description": "Format XML documents",
-    "version": "1.0.2",
-    "publisher": "mikeburgh",
-    "icon": "xml_formt.png",
-    "engines": {
-        "vscode": "^1.19.0"
-    },
-    "bugs": {
-        "url": "https://github.com/mikeburgh/vscode-xml-format"
-    },
-    "homepage": "https://github.com/mikeburgh/vscode-xml-format/blob/master/README.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mikeburgh/vscode-xml-format.git"
-    },
-    "categories": [
-        "Formatters"
-    ],
-    "activationEvents": [
-        "onLanguage:xml",
-        "onLanguage:xsl"
-    ],
-    "main": "./extension",
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "devDependencies": {
-        "vscode": "^1.1.21"
-    }
+	"name": "xml-format",
+	"displayName": "XML Format",
+	"description": "Format XML documents",
+	"version": "1.0.2",
+	"publisher": "mikeburgh",
+	"icon": "xml_formt.png",
+	"engines": {
+		"vscode": "^1.19.0"
+	},
+	"bugs": {
+		"url": "https://github.com/mikeburgh/vscode-xml-format"
+	},
+	"homepage": "https://github.com/mikeburgh/vscode-xml-format/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mikeburgh/vscode-xml-format.git"
+	},
+	"categories": [
+		"Formatters"
+	],
+	"activationEvents": [
+		"onLanguage:xml",
+		"onLanguage:xsl"
+	],
+	"main": "./extension",
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"devDependencies": {
+		"vscode": "^1.1.21"
+	}
 }
