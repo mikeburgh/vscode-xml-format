@@ -61,6 +61,7 @@ VKBeautify.prototype.xml = function(text,step) {
         len = ar.length,
         inComment = false,
         inCDATA = false,
+        deep_real = 0,
         deep = 0,
         str = '',
         ix = 0,
@@ -123,22 +124,25 @@ VKBeautify.prototype.xml = function(text,step) {
             else if( ix > 0 &&
                 /^<\/[^<>!?\/\s]/.exec(ar[ix]) && /^<[^<>!?\/\s]/.exec(ar[ix-1]) &&
                 /^<\/[^<>!?\/\s]+/.exec(ar[ix])[0].replace('/','') == /^<[^<>!?\/\s]+/.exec(ar[ix-1])[0] ) {
-                if(deep > 0) deep--;
+                if(deep_real > 0) deep_real--;
+                if(deep_real <= 100) deep = deep_real;
                 str += ar[ix];
             }
             // </elm> //
             else if(ar[ix].search(/<\//) > -1) {
-                if(deep > 0) deep--;
+                if(deep_real > 0) deep_real--;
+                if(deep_real <= 100) deep = deep_real;
                 str = str.trim()+shift[deep]+ar[ix];
             }
             // <elm> or <elm/> //
             else if(ar[ix].search(/<[^<>!?\/\s]/) > -1) {
                 str = str.trim()+shift[deep]+ar[ix];
-                deep++;
+                deep_real++;
                 // <elm/> //
                 if(ar[ix].search(/\/>/) > -1) {
-                    deep--;
+                    deep_real--;
                 }
+                if(deep_real <= 100) deep = deep_real;
             }
             // xmlns //
             //else if(ar[ix].search(/xmlns[:=]/) > -1) {
