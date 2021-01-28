@@ -2,7 +2,7 @@
 	"name": "xml-format",
 	"displayName": "XML Format",
 	"description": "Format XML documents",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"publisher": "mikeburgh",
 	"icon": "xml_formt.png",
 	"engines": {
