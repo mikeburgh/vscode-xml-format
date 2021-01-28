@@ -54,6 +54,12 @@ None
 
 ## Release Notes
 
+### 1.1.2
+
+Thanks to https://github.com/MasterNobody :
+
+-   Fix formatting with more than 100 levels of nesting
+
 ### 1.1.1
 
 Thanks to https://github.com/MasterNobody :
