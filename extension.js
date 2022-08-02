@@ -47,114 +47,114 @@ function createShiftArr(step) {
 }
 
 function VKBeautify(){
-    var settings = vscode.workspace.getConfiguration();
-    this.step = settings.editor.insertSpaces ? settings.editor.tabSize : '\t';
-    this.shift = createShiftArr( this.step );
+    this.steps = {};//hold cache of our step configs (based on indent type and size)
 };
 
-VKBeautify.prototype.xml = function(text,step) {
+VKBeautify.prototype.xml = function(text) {
+	var ar = text
+			.trim()
+			.replace(/</g, '~::~<')
+			//.replace(/(\s)(xmlns[:=])/g,"$1~::~$2")
+			.split('~::~'),
+		len = ar.length,
+		inComment = false,
+		inCDATA = false,
+		deep_real = 0,
+		deep = 0,
+		str = '',
+		ix = 0,
+        step = vscode.window.activeTextEditor.options.insertSpaces ? vscode.window.activeTextEditor.options.tabSize : '\t'; //read the activeEditors indent config!
 
-    var ar = text.trim()
-                    .replace(/</g,"~::~<")
-                    //.replace(/(\s)(xmlns[:=])/g,"$1~::~$2")
-                    .split('~::~'),
-        len = ar.length,
-        inComment = false,
-        inCDATA = false,
-        deep_real = 0,
-        deep = 0,
-        str = '',
-        ix = 0,
-        shift = step ? createShiftArr(step) : this.shift;
+    if (!this.steps[step]) { 
+        this.steps[step] = createShiftArr(step);
+    }
+	shift = this.steps[step];
 
-        for(ix=0;ix<len;ix++) {
-            // in comment //
-            if(inComment) {
-                str += ar[ix];
-                // end comment //
-                if(ar[ix].search(/-->/) > -1) {
-                    inComment = false;
-                }
-            }
-            // in <![CDATA[...]]> //
-            else if(inCDATA) {
-                str += ar[ix];
-                // end <![CDATA[...]]> //
-                if(ar[ix].search(/\]\]>/) > -1) {
-                    inCDATA = false;
-                }
-            }
-            // start comment //
-            else if(ar[ix].search(/<!--/) > -1) {
-                str = str.trim()+shift[deep]+ar[ix];
-                inComment = true;
-                // end comment //
-                if(ar[ix].search(/-->/) > -1) {
-                    inComment = false;
-                }
-            }
-            // end comment //
-            else if(ar[ix].search(/-->/) > -1) {
-                str += ar[ix];
-                inComment = false;
-            }
-            // start <![CDATA[...]]> //
-            else if(ar[ix].search(/<!\[CDATA\[/) > -1) {
-                str = str.trim()+shift[deep]+ar[ix];
-                inCDATA = true;
-                // end <![CDATA[...]]> //
-                if(ar[ix].search(/\]\]>/) > -1) {
-                    inCDATA = false;
-                }
-            }
-            // end <![CDATA[...]]> //
-            else if(ar[ix].search(/\]\]>/) > -1) {
-                str += ar[ix];
-                inCDATA = false;
-            }
-            // <!DOCTYPE //
-            else if(ar[ix].search(/<!/) > -1) {
-                str = str.trim()+shift[deep]+ar[ix];
-            }
-            // <?xml //
-            else if(ar[ix].search(/<\?/) > -1) {
-                str = str.trim()+shift[deep]+ar[ix];
-            }
-            // <elm></elm> //
-            else if( ix > 0 &&
-                /^<\/[^<>!?\/\s]/.exec(ar[ix]) && /^<[^<>!?\/\s]/.exec(ar[ix-1]) &&
-                /^<\/[^<>!?\/\s]+/.exec(ar[ix])[0].replace('/','') == /^<[^<>!?\/\s]+/.exec(ar[ix-1])[0] ) {
-                if(deep_real > 0) deep_real--;
-                if(deep_real <= 100) deep = deep_real;
-                str += ar[ix];
-            }
-            // </elm> //
-            else if(ar[ix].search(/<\//) > -1) {
-                if(deep_real > 0) deep_real--;
-                if(deep_real <= 100) deep = deep_real;
-                str = str.trim()+shift[deep]+ar[ix];
-            }
-            // <elm> or <elm/> //
-            else if(ar[ix].search(/<[^<>!?\/\s]/) > -1) {
-                str = str.trim()+shift[deep]+ar[ix];
-                deep_real++;
-                // <elm/> //
-                if(ar[ix].search(/\/>/) > -1) {
-                    deep_real--;
-                }
-                if(deep_real <= 100) deep = deep_real;
-            }
-            // xmlns //
-            //else if(ar[ix].search(/xmlns[:=]/) > -1) {
-            //    str = str.trim()+shift[deep]+ar[ix];
-            //}
+	for (ix = 0; ix < len; ix++) {
+		// in comment //
+		if (inComment) {
+			str += ar[ix];
+			// end comment //
+			if (ar[ix].search(/-->/) > -1) {
+				inComment = false;
+			}
+		}
+		// in <![CDATA[...]]> //
+		else if (inCDATA) {
+			str += ar[ix];
+			// end <![CDATA[...]]> //
+			if (ar[ix].search(/\]\]>/) > -1) {
+				inCDATA = false;
+			}
+		}
+		// start comment //
+		else if (ar[ix].search(/<!--/) > -1) {
+			str = str.trim() + shift[deep] + ar[ix];
+			inComment = true;
+			// end comment //
+			if (ar[ix].search(/-->/) > -1) {
+				inComment = false;
+			}
+		}
+		// end comment //
+		else if (ar[ix].search(/-->/) > -1) {
+			str += ar[ix];
+			inComment = false;
+		}
+		// start <![CDATA[...]]> //
+		else if (ar[ix].search(/<!\[CDATA\[/) > -1) {
+			str = str.trim() + shift[deep] + ar[ix];
+			inCDATA = true;
+			// end <![CDATA[...]]> //
+			if (ar[ix].search(/\]\]>/) > -1) {
+				inCDATA = false;
+			}
+		}
+		// end <![CDATA[...]]> //
+		else if (ar[ix].search(/\]\]>/) > -1) {
+			str += ar[ix];
+			inCDATA = false;
+		}
+		// <!DOCTYPE //
+		else if (ar[ix].search(/<!/) > -1) {
+			str = str.trim() + shift[deep] + ar[ix];
+		}
+		// <?xml //
+		else if (ar[ix].search(/<\?/) > -1) {
+			str = str.trim() + shift[deep] + ar[ix];
+		}
+		// <elm></elm> //
+		else if (ix > 0 && /^<\/[^<>!?\/\s]/.exec(ar[ix]) && /^<[^<>!?\/\s]/.exec(ar[ix - 1]) && /^<\/[^<>!?\/\s]+/.exec(ar[ix])[0].replace('/', '') == /^<[^<>!?\/\s]+/.exec(ar[ix - 1])[0]) {
+			if (deep_real > 0) deep_real--;
+			if (deep_real <= 100) deep = deep_real;
+			str += ar[ix];
+		}
+		// </elm> //
+		else if (ar[ix].search(/<\//) > -1) {
+			if (deep_real > 0) deep_real--;
+			if (deep_real <= 100) deep = deep_real;
+			str = str.trim() + shift[deep] + ar[ix];
+		}
+		// <elm> or <elm/> //
+		else if (ar[ix].search(/<[^<>!?\/\s]/) > -1) {
+			str = str.trim() + shift[deep] + ar[ix];
+			deep_real++;
+			// <elm/> //
+			if (ar[ix].search(/\/>/) > -1) {
+				deep_real--;
+			}
+			if (deep_real <= 100) deep = deep_real;
+		}
+		// xmlns //
+		//else if(ar[ix].search(/xmlns[:=]/) > -1) {
+		//    str = str.trim()+shift[deep]+ar[ix];
+		//}
+		else {
+			str += ar[ix];
+		}
+	}
 
-            else {
-                str += ar[ix];
-            }
-        }
-
-    return str.trim();
+	return str.trim();
 }
 
 function updateVKBeautify()
@@ -184,7 +184,7 @@ function activate( context )
     var disposableXML = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xml' }, {
         provideDocumentFormattingEdits: function( document )
         {
-            return [ vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
+            return [vscode.TextEdit.replace(getRange(document), vkbeautify.xml(document.getText()))];
         }
     } );
     vscode.workspace.onDidChangeConfiguration( updateVKBeautify, this, context.subscriptions );
@@ -193,8 +193,8 @@ function activate( context )
     var disposableXSL = vscode.languages.registerDocumentFormattingEditProvider( { language: 'xsl' }, {
         provideDocumentFormattingEdits: function( document )
         {
-            return [ vscode.TextEdit.replace( getRange(document), vkbeautify.xml( document.getText() ) ) ]
-        }
+			return [vscode.TextEdit.replace(getRange(document), vkbeautify.xml(document.getText()))];
+		}
     } );
     vscode.workspace.onDidChangeConfiguration( updateVKBeautify, this, context.subscriptions );
     context.subscriptions.push( disposableXSL );

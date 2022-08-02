@@ -54,6 +54,10 @@ None
 
 ## Release Notes
 
+### 1.1.3
+
+-   Use document indent settings
+
 ### 1.1.2
 
 Thanks to https://github.com/MasterNobody :
